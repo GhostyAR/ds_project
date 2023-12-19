@@ -1,4 +1,4 @@
-from math import log2
+from math import log2, sqrt
 import string
 import re
 
@@ -59,6 +59,14 @@ def TF_IDF_vectorize(documents_list: list, inverted_index: dict, sentence):
 def vectorizing_documents(documents_list: dict):
     for doc in documents_list:
         doc.doc_vector = [sum(x) for x in zip(*doc.sentences_vectors.values())]
+
+def cosine_similarity_calculator(A: list, B: list):
+    sumAB, sumA2, sumB2 = 0, 0, 0
+    for i in range(0, len(A)):
+        sumAB += A[i]*B[i]
+        sumA2 += A[i]*A[i]
+        sumB2 += B[i]*B[i]
+    return sumAB/(sqrt(sumA2)*sqrt(sumB2))
 
 
 documents_list = []
