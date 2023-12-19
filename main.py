@@ -68,6 +68,16 @@ def cosine_similarity_calculator(A: list, B: list):
         sumB2 += B[i]*B[i]
     return sumAB/(sqrt(sumA2)*sqrt(sumB2))
 
+def most_similar(documents_list: dict, query_vector: list):
+    cosine_distance = {}
+    for doc in documents_list:
+        cosine = cosine_similarity_calculator(query_vector, doc.doc_vector)
+        cosine_distance[doc] = cosine
+
+    cosine_distance = dict(sorted(
+        cosine_distance.items(), key=lambda item: item[1]))
+    return cosine_distance
+
 
 documents_list = []
 
@@ -93,3 +103,16 @@ for doc in documents_list:
             corpus, inverted_index, sentence)
 
 vectorizing_documents(documents_list)
+
+user_query = input()
+user_query_vector = TF_IDF_vectorize(corpus, inverted_index, user_query)
+
+most_similar_doc = list(most_similar(
+    documents_list, user_query_vector).keys())[-1]
+
+print("most_similar_doc.text: ", most_similar_doc.text)
+cosine_distance = {}
+for sentence in most_similar_doc.sentences_vectors.keys():
+    sentence_vector = most_similar_doc.sentences_vectors[sentence]
+    cosine = cosine_similarity_calculator(user_query_vector, sentence_vector)
+    cosine_distance[sentence] = cosine
