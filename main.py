@@ -116,3 +116,8 @@ for sentence in most_similar_doc.sentences_vectors.keys():
     sentence_vector = most_similar_doc.sentences_vectors[sentence]
     cosine = cosine_similarity_calculator(user_query_vector, sentence_vector)
     cosine_distance[sentence] = cosine
+
+cosine_distance = dict(sorted(
+    cosine_distance.items(), key=lambda item: item[1]))
+most_similar_sentence = list(cosine_distance.keys())[-1]
+print("most_similar_sentence: ", most_similar_sentence)
