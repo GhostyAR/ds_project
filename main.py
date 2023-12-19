@@ -47,6 +47,20 @@ def make_inverted_index(documents_list):
     return inverted_index
 
 
+def TF_IDF_vectorize(documents_list: list, inverted_index: dict, sentence):
+    tokenized_sentence = tokenizer(sentence)
+    vector = []
+    for word in inverted_index.keys():
+        vector.append(TF_IDF_calculator(documents_list,
+                      inverted_index, tokenized_sentence, word))
+    return vector
+
+
+def vectorizing_documents(documents_list: dict):
+    for doc in documents_list:
+        doc.doc_vector = [sum(x) for x in zip(*doc.sentences_vectors.values())]
+
+
 documents_list = []
 
 corpus = [
@@ -64,3 +78,10 @@ for txt in corpus:
     documents_list.append(doc)
 
 inverted_index = make_inverted_index(corpus)
+
+for doc in documents_list:
+    for sentence in doc.sentences_vectors.keys():
+        doc.sentences_vectors[sentence] = TF_IDF_vectorize(
+            corpus, inverted_index, sentence)
+
+vectorizing_documents(documents_list)
