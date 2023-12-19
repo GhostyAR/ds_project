@@ -81,12 +81,24 @@ def most_similar(documents_list: dict, query_vector: list):
 
 documents_list = []
 
-corpus = [
-    "this is the first document. second document coming next.",
-    "This document is the second document. going for the third!",
-    "And this is the third one.",
-    "Is this the first document?",
-]
+corpus = []
+
+#getting the query
+user_query = input("Please insert your query: ")
+
+#for storing the document's id to have an access at the end
+document_add_list = []
+#appending documents to corpus
+print("candidate_document_id: ")
+for i in range(0, 20):
+    document_add = int(input())
+    document_add_list.append(document_add)
+    file_paths = "G:/University/Term 3/DS/Project/phaze 1/DS_Project/data/document_{}.txt"
+    final_path = file_paths.format(document_add)
+
+    with open(final_path, 'r', encoding='utf-8') as file:
+        file_content = file.read()
+        corpus.append(file_content)
 
 for txt in corpus:
     doc = Document()
