@@ -34,6 +34,19 @@ def TF_IDF_calculator(document_list: list, inverted_index: dict, document_words_
     return float(TF_calculator(document_words_list, word))*float(IDF_calculator(document_list, inverted_index, word))
 
 
+def make_inverted_index(documents_list):
+    inverted_index = {}
+    i = 0
+    for doc in documents_list:
+        doc_word_set = set(tokenizer(doc))
+        for word in doc_word_set:
+            if word not in inverted_index.keys():
+                inverted_index[word] = []
+            inverted_index[word].append(i)
+        i += 1
+    return inverted_index
+
+
 documents_list = []
 
 corpus = [
@@ -49,3 +62,5 @@ for txt in corpus:
     doc.sentences_vectors = {sentence: []
                              for sentence in re.split(r'[.!?\n] ', txt)}
     documents_list.append(doc)
+
+inverted_index = make_inverted_index(corpus)
