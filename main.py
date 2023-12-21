@@ -4,12 +4,12 @@ import os
 from difflib import SequenceMatcher
 
 
-
 class Document():
     def __init__(self):
         self.text = ""
         self.paragraphs_vectors = {}
         self.doc_vector = []
+        self.most_repeated_word = ""
 
 
 def remove_punctuation(text: str):
@@ -37,44 +37,44 @@ def make_inverted_index(documents_list):
     return inverted_index
 
 
-#a TF_IDF for the query which we use the same IDF function as documents but a different TF function for query
+# a TF_IDF for the query which we use the same IDF function as documents but a different TF function for query
 def TF_IDF_vectorize_query(documents_list: list, inverted_index: dict, sentence):
     tokenized_sentence = tokenizer(sentence)
     vector = []
     for word in inverted_index.keys():
-        vector.append(TF_IDF_calculator_query(documents_list,inverted_index, tokenized_sentence, word))
+        vector.append(TF_IDF_calculator_query(documents_list,
+                      inverted_index, tokenized_sentence, word))
     return vector
 
 
-#query
+# query
 def TF_IDF_calculator_query(document_list: list, inverted_index: dict, document_words_list: list, word: str):
     return float(TF_calculator_query(document_words_list, word))*float(IDF_calculator(document_list, inverted_index, word))
 
 
-#a TF function for only the query using sequencemmatcher incase query is not exactly like what is in documents
+# a TF function for only the query using sequencemmatcher incase query is not exactly like what is in documents
 def TF_calculator_query(text_words: list, word: str, similarity_threshold: float = 0.8):
     exact_match_count = text_words.count(word)
 
     if exact_match_count > 0:
         return exact_match_count
 
-    if word not in text_words:                                                   
-        mild_similarity_count = 0                                            
-        for token in text_words:                                             
-            similarity_ratio = SequenceMatcher(None, token, word).ratio()      
-            if similarity_ratio >= similarity_threshold:                         
+    if word not in text_words:
+        mild_similarity_count = 0
+        for token in text_words:
+            similarity_ratio = SequenceMatcher(None, token, word).ratio()
+            if similarity_ratio >= similarity_threshold:
                 mild_similarity_count += 1
 
         return mild_similarity_count
     return 0
 
 
-
 def IDF_calculator(document_list: list, inverted_index: dict, word: str):
     return log2(len(document_list)/len(inverted_index[word]))
 
 
-#TF calculator for documents
+# TF calculator for documents
 def TF_calculator(text_words: list, word: str):
     return text_words.count(word)
 
@@ -87,7 +87,8 @@ def TF_IDF_vectorize(documents_list: list, inverted_index: dict, paragraph):
     tokenized_paragraph = tokenizer(paragraph)
     vector = []
     for word in inverted_index.keys():
-        vector.append(TF_IDF_calculator(documents_list,inverted_index, tokenized_paragraph, word))
+        vector.append(TF_IDF_calculator(documents_list,
+                      inverted_index, tokenized_paragraph, word))
     return vector
 
 
@@ -126,6 +127,18 @@ def paragraphs(most_similar_doc):
     return paragraph
 
 
+def most_repeated_word_setter(document_list: list, doc: Document, inverted_index: dict):
+    maximum_TF = 0
+    MRW = ""
+    temp_dict = dict(zip(inverted_index.keys(), doc.doc_vector))
+    for word, TF_IDF in temp_dict.items():
+        if ((TF_IDF/(IDF_calculator(document_list, inverted_index, word)+1)) > maximum_TF):
+            maximum_TF = TF_IDF / \
+                (IDF_calculator(document_list, inverted_index, word)+1)
+            MRW = word
+    doc.most_repeated_word = MRW
+
+
 documents_list = []
 
 corpus = []
@@ -158,7 +171,8 @@ inverted_index = make_inverted_index(corpus)
 
 for doc in documents_list:
     for paragraph in doc.paragraphs_vectors.keys():
-        doc.paragraphs_vectors[paragraph] = TF_IDF_vectorize(corpus, inverted_index, paragraph)
+        doc.paragraphs_vectors[paragraph] = TF_IDF_vectorize(
+            corpus, inverted_index, paragraph)
 
 vectorizing_documents(documents_list)
 
@@ -192,3 +206,6 @@ for i in paragraph_list:
         print("     1")
     else:
         print("     0")
+
+for doc in documents_list:
+    most_repeated_word_setter(documents_list, doc, inverted_index)
