@@ -1,6 +1,7 @@
 from math import log2, sqrt
 import string
 import os
+from difflib import SequenceMatcher
 
 
 
@@ -23,18 +24,6 @@ def tokenizer(text: str):
     return cleaned_text.split()
 
 
-def TF_calculator(text_words: list, word: str):
-    return text_words.count(word)
-
-
-def IDF_calculator(document_list: list, inverted_index: dict, word: str):
-    return log2(len(document_list)/len(inverted_index[word]))
-
-
-def TF_IDF_calculator(document_list: list, inverted_index: dict, document_words_list: list, word: str):
-    return float(TF_calculator(document_words_list, word))*float(IDF_calculator(document_list, inverted_index, word))
-
-
 def make_inverted_index(documents_list):
     inverted_index = {}
     i = 0
@@ -48,19 +37,63 @@ def make_inverted_index(documents_list):
     return inverted_index
 
 
+#a TF_IDF for the query which we use the same IDF function as documents but a different TF function for query
+def TF_IDF_vectorize_query(documents_list: list, inverted_index: dict, sentence):
+    tokenized_sentence = tokenizer(sentence)
+    vector = []
+    for word in inverted_index.keys():
+        vector.append(TF_IDF_calculator_query(documents_list,inverted_index, tokenized_sentence, word))
+    return vector
+
+
+#query
+def TF_IDF_calculator_query(document_list: list, inverted_index: dict, document_words_list: list, word: str):
+    return float(TF_calculator_query(document_words_list, word))*float(IDF_calculator(document_list, inverted_index, word))
+
+
+#a TF function for only the query using sequencemmatcher incase query is not exactly like what is in documents
+def TF_calculator_query(text_words: list, word: str, similarity_threshold: float = 0.8):
+    exact_match_count = text_words.count(word)
+
+    if exact_match_count > 0:
+        return exact_match_count
+
+    if word not in text_words:                                                   
+        mild_similarity_count = 0                                            
+        for token in text_words:                                             
+            similarity_ratio = SequenceMatcher(None, token, word).ratio()      
+            if similarity_ratio >= similarity_threshold:                         
+                mild_similarity_count += 1
+
+        return mild_similarity_count
+    return 0
+
+
+
+def IDF_calculator(document_list: list, inverted_index: dict, word: str):
+    return log2(len(document_list)/len(inverted_index[word]))
+
+
+#TF calculator for documents
+def TF_calculator(text_words: list, word: str):
+    return text_words.count(word)
+
+
+def TF_IDF_calculator(document_list: list, inverted_index: dict, document_words_list: list, word: str):
+    return float(TF_calculator(document_words_list, word))*float(IDF_calculator(document_list, inverted_index, word))
+
+
 def TF_IDF_vectorize(documents_list: list, inverted_index: dict, paragraph):
     tokenized_paragraph = tokenizer(paragraph)
     vector = []
     for word in inverted_index.keys():
-        vector.append(TF_IDF_calculator(documents_list,
-                      inverted_index, tokenized_paragraph, word))
+        vector.append(TF_IDF_calculator(documents_list,inverted_index, tokenized_paragraph, word))
     return vector
 
 
 def vectorizing_documents(documents_list: dict):
     for doc in documents_list:
-        doc.doc_vector = [sum(x)
-                          for x in zip(*doc.paragraphs_vectors.values())]
+        doc.doc_vector = [sum(x)for x in zip(*doc.paragraphs_vectors.values())]
 
 
 def cosine_similarity_calculator(A: list, B: list):
@@ -69,6 +102,10 @@ def cosine_similarity_calculator(A: list, B: list):
         sumAB += A[i]*B[i]
         sumA2 += A[i]*A[i]
         sumB2 += B[i]*B[i]
+
+    if sumA2 == 0 or sumB2 == 0:
+        return 0.0
+
     return sumAB/(sqrt(sumA2)*sqrt(sumB2))
 
 
@@ -82,9 +119,8 @@ def most_similar(documents_list: dict, query_vector: list):
         cosine_distance.items(), key=lambda item: item[1]))
     return cosine_distance
 
+
 # storing paragraphs of the document selected
-
-
 def paragraphs(most_similar_doc):
     paragraph = most_similar_doc.text.split('\n')
     return paragraph
@@ -122,13 +158,12 @@ inverted_index = make_inverted_index(corpus)
 
 for doc in documents_list:
     for paragraph in doc.paragraphs_vectors.keys():
-        doc.paragraphs_vectors[paragraph] = TF_IDF_vectorize(
-            corpus, inverted_index, paragraph)
+        doc.paragraphs_vectors[paragraph] = TF_IDF_vectorize(corpus, inverted_index, paragraph)
 
 vectorizing_documents(documents_list)
 
 
-user_query_vector = TF_IDF_vectorize(corpus, inverted_index, user_query)
+user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
 
 most_similar_doc = list(most_similar(
     documents_list, user_query_vector).keys())[-1]
