@@ -10,6 +10,7 @@ class Document():
         self.paragraphs_vectors = {}
         self.doc_vector = []
         self.most_repeated_word = ""
+        self.five_most_important_words = []
 
 
 def remove_punctuation(text: str):
@@ -139,6 +140,13 @@ def most_repeated_word_setter(document_list: list, doc: Document, inverted_index
     doc.most_repeated_word = MRW
 
 
+def five_most_important_words_setter(doc: Document):
+    temp_dict = dict(zip(inverted_index.keys(), doc.doc_vector))
+    sorted_temp_dict = dict(
+        sorted(temp_dict.items(), key=lambda item: item[1], reverse=True))
+    doc.five_most_important_words = list(sorted_temp_dict.keys())[:6]
+
+
 documents_list = []
 
 corpus = []
@@ -182,7 +190,7 @@ user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
 most_similar_doc = list(most_similar(
     documents_list, user_query_vector).keys())[-1]
 
-# getting access to the index that the text is stored and the documen's id next
+# getting access to the index that the text is stored and the document's id next
 wnated_index = corpus.index(most_similar_doc.text)
 print("document_id: ", document_add_list[wnated_index])
 
@@ -209,3 +217,4 @@ for i in paragraph_list:
 
 for doc in documents_list:
     most_repeated_word_setter(documents_list, doc, inverted_index)
+    five_most_important_words_setter(doc)
