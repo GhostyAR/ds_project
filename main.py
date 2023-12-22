@@ -111,15 +111,19 @@ def cosine_similarity_calculator(A: list, B: list):
     return sumAB/(sqrt(sumA2)*sqrt(sumB2))
 
 
-def most_similar(documents_list: dict, query_vector: list):
-    cosine_distance = {}
-    for doc in documents_list:
-        cosine = cosine_similarity_calculator(query_vector, doc.doc_vector)
-        cosine_distance[doc] = cosine
-
-    cosine_distance = dict(sorted(
-        cosine_distance.items(), key=lambda item: item[1]))
-    return cosine_distance
+def most_similar(most_similar_doc: Document, input_list: list, query_vector: list):
+    cosine_distances = {}
+    for item in input_list:
+        if (type(item) == str):
+            cosine = cosine_similarity_calculator(
+                most_similar_doc.paragraphs_vectors[item], query_vector)
+        else:
+            cosine = cosine_similarity_calculator(
+                item.doc_vector, query_vector)
+        cosine_distances[item] = cosine
+    cosine_distances = dict(sorted(
+        cosine_distances.items(), key=lambda item: item[1]))
+    return cosine_distances
 
 
 # storing paragraphs of the document selected
@@ -144,7 +148,7 @@ def five_most_important_words_setter(doc: Document):
     temp_dict = dict(zip(inverted_index.keys(), doc.doc_vector))
     sorted_temp_dict = dict(
         sorted(temp_dict.items(), key=lambda item: item[1], reverse=True))
-    doc.five_most_important_words = list(sorted_temp_dict.keys())[:6]
+    doc.five_most_important_words = list(sorted_temp_dict.keys())[:5]
 
 
 documents_list = []
@@ -161,7 +165,7 @@ print("candidate_document_id: ")
 for i in range(0, 20):
     document_add = int(input())
     document_add_list.append(document_add)
-    file_paths = "G:/University/Term 3/DS/Project/phaze 1/DS_Project/data/document_{}.txt"
+    file_paths = "data/document_{}.txt"
     final_path = file_paths.format(document_add)
 
     with open(final_path, 'r', encoding='utf-8') as file:
@@ -187,22 +191,15 @@ vectorizing_documents(documents_list)
 
 user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
 
-most_similar_doc = list(most_similar(
-    documents_list, user_query_vector).keys())[-1]
+most_similar_doc = list(most_similar(None,
+                                     documents_list, user_query_vector).keys())[-1]
 
 # getting access to the index that the text is stored and the document's id next
 wnated_index = corpus.index(most_similar_doc.text)
 print("document_id: ", document_add_list[wnated_index])
 
-cosine_distance = {}
-for paragraph in most_similar_doc.paragraphs_vectors.keys():
-    paragraph_vector = most_similar_doc.paragraphs_vectors[paragraph]
-    cosine = cosine_similarity_calculator(user_query_vector, paragraph_vector)
-    cosine_distance[paragraph] = cosine
-
-cosine_distance = dict(
-    sorted(cosine_distance.items(), key=lambda item: item[1]))
-most_similar_paragraph = list(cosine_distance.keys())[-1]
+most_similar_paragraph = list(most_similar(most_similar_doc,
+                                           most_similar_doc.paragraphs_vectors.keys(), user_query_vector).keys())[-1]
 print("most_similar_paragraph: ", most_similar_paragraph)
 
 # finding the most similar paragraph that query used in among all the paragraph's of the selected document
@@ -218,3 +215,5 @@ for i in paragraph_list:
 for doc in documents_list:
     most_repeated_word_setter(documents_list, doc, inverted_index)
     five_most_important_words_setter(doc)
+
+print(1)
