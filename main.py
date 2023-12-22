@@ -215,5 +215,3 @@ for i in paragraph_list:
 for doc in documents_list:
     most_repeated_word_setter(documents_list, doc, inverted_index)
     five_most_important_words_setter(doc)
-
-print(1)
