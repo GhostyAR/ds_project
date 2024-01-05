@@ -4,7 +4,7 @@ documents_list = []
 
 corpus = []
 
-number_of_docs = 50
+number_of_docs = 1000
 
 document_add_list = []
 
@@ -42,7 +42,6 @@ labels = kmeans.fit_predict(data)
 
 # Plot the original data and the clusters
 plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', edgecolor='k')
-# plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=300, marker='X', c='red', label='Centroids')
 plt.title('K-Means Clustering')
 plt.xlabel('X')
 plt.ylabel('Y')
