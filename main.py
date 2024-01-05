@@ -1,15 +1,6 @@
 from ds_project_lib import *
 
 
-def doc_object_creator(documents_list: list, corpus: list):
-    for txt in corpus:
-        doc = Document()
-        doc.text = txt
-        doc.paragraphs_vectors = {paragraph: []
-                                  for paragraph in txt.split('\n')}
-        documents_list.append(doc)
-
-
 documents_list = []
 
 corpus = []

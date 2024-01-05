@@ -174,3 +174,12 @@ def corpus_filler(corpus: list, document_id: int, document_add_list: list):
     with open(final_path, 'r', encoding='utf-8') as file:
         file_content = file.read()
         corpus.append(file_content)
+
+
+def doc_object_creator(documents_list: list, corpus: list):
+    for txt in corpus:
+        doc = Document()
+        doc.text = txt
+        doc.paragraphs_vectors = {paragraph: []
+                                  for paragraph in txt.split('\n')}
+        documents_list.append(doc)
