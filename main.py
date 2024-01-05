@@ -1,6 +1,15 @@
 from ds_project_lib import *
 
 
+def doc_object_creator(documents_list: list, corpus: list):
+    for txt in corpus:
+        doc = Document()
+        doc.text = txt
+        doc.paragraphs_vectors = {paragraph: []
+                                  for paragraph in txt.split('\n')}
+        documents_list.append(doc)
+
+
 documents_list = []
 
 corpus = []
@@ -16,11 +25,8 @@ for i in range(0, 20):
     document_id = int(input())
     corpus_filler(corpus, document_id, document_add_list)
 
-for txt in corpus:
-    doc = Document()
-    doc.text = txt
-    doc.paragraphs_vectors = {paragraph: []for paragraph in txt.split('\n')}
-    documents_list.append(doc)
+# creating objects of Document class and appending them to documents_list
+doc_object_creator(documents_list, corpus)
 
 inverted_index = make_inverted_index(corpus)
 
