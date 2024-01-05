@@ -1,5 +1,15 @@
 from ds_project_lib import *
 
+
+def corpus_filler(corpus: list, document_id: int, document_add_list: list):
+    document_add_list.append(document_id)
+    file_paths = "data/document_{}.txt"
+    final_path = file_paths.format(document_id)
+    with open(final_path, 'r', encoding='utf-8') as file:
+        file_content = file.read()
+        corpus.append(file_content)
+
+
 documents_list = []
 
 corpus = []
@@ -12,14 +22,8 @@ document_add_list = []
 # appending documents to corpus
 print("candidate_document_id: ")
 for i in range(0, 20):
-    document_add = int(input())
-    document_add_list.append(document_add)
-    file_paths = "data/document_{}.txt"
-    final_path = file_paths.format(document_add)
-
-    with open(final_path, 'r', encoding='utf-8') as file:
-        file_content = file.read()
-        corpus.append(file_content)
+    document_id = int(input())
+    corpus_filler(corpus, document_id, document_add_list)
 
 for txt in corpus:
     doc = Document()
@@ -53,7 +57,7 @@ most_similar_paragraph = list(most_similar(most_similar_doc,
                                            most_similar_doc.paragraphs_vectors.keys(), user_query_vector).keys())[-1]
 print("most_similar_paragraph: ", most_similar_paragraph)
 
-# finding the most similar paragraph that query used in among all the paragraph's of the selected document
+#  finding the most similar paragraph that query used in among all the paragraph's of the selected document
 paragraph_list = paragraphs(most_similar_doc)
 print("is_selected: ")
 
@@ -65,7 +69,7 @@ for i in paragraph_list:
 
 for doc in documents_list:
     most_repeated_word_setter(documents_list, doc, inverted_index)
-    five_most_important_words_setter(doc)
+    five_most_important_words_setter(doc, inverted_index)
 
 temp_list = []
 
