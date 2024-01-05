@@ -10,7 +10,8 @@ class Document():
         self.text = ""
         self.paragraphs_vectors = {}
         self.doc_vector = []
-        self.two_d_vector = [] # an attribute defined for making the 2d vectors(phaze 2)
+        # an attribute defined for making the 2d vectors(phaze 2)
+        self.two_d_vector = []
         self.most_repeated_word = ""
         self.five_most_important_words = []
 
@@ -153,29 +154,15 @@ def five_most_important_words_setter(doc: Document):
     doc.five_most_important_words = list(sorted_temp_dict.keys())[:5]
 
 
-#2d vectorization of documents
-def two_d_vectorization(documents_list: list, user_query_vector: list):
-
+# 2d vectorization of documents
+def two_d_vectorization(documents_list: list):
     pca = PCA(n_components=2)
-
     vectors_list = []
-    query_two_d_vectors = []
-
     for doc in documents_list:
         vectors_list.append(doc.doc_vector)
-    
-    vectors_list.append(user_query_vector)
-
-
     transformed_data = pca.fit_transform(vectors_list)
-
-    for i in range (len(transformed_data) - 1):
+    for i in range(len(transformed_data) - 1):
         documents_list[i].two_d_vector = transformed_data[i].tolist()
-
-    query_two_d_vectors = transformed_data[-1].tolist()
-
-    return query_two_d_vectors
-
 
 
 documents_list = []
@@ -217,9 +204,6 @@ vectorizing_documents(documents_list)
 
 
 user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
-
-#2d vectorization of documents and  query
-two_d_query = two_d_vectorization(documents_list, user_query_vector)
 
 
 most_similar_doc = list(most_similar(None,
