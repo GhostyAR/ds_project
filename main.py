@@ -1,18 +1,20 @@
 from ds_project_lib import *
 
-
 documents_list = []
 
 corpus = []
+
+number_of_candidate_docs = 20
 
 # getting the query
 user_query = input("Please insert your query: ")
 
 # for storing the document's id to have an access at the end
 document_add_list = []
-# appending documents to corpus
+
+# appending texts of documents to corpus
 print("candidate_document_id: ")
-for i in range(0, 20):
+for i in range(0, number_of_candidate_docs):
     document_id = int(input())
     corpus_filler(corpus, document_id, document_add_list)
 
@@ -29,10 +31,7 @@ for doc in documents_list:
 
 vectorizing_documents(documents_list)
 
-two_d_vectorization(documents_list)
-
 user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
-
 
 most_similar_doc = list(most_similar(None,
                                      documents_list, user_query_vector).keys())[-1]
@@ -45,7 +44,7 @@ most_similar_paragraph = list(most_similar(most_similar_doc,
                                            most_similar_doc.paragraphs_vectors.keys(), user_query_vector).keys())[-1]
 print("most_similar_paragraph: ", most_similar_paragraph)
 
-#  finding the most similar paragraph that query used in among all the paragraph's of the selected document
+# finding the most similar paragraph that query used in among all the paragraph's of the selected document
 paragraph_list = paragraphs(most_similar_doc)
 print("is_selected: ")
 
@@ -57,23 +56,4 @@ for i in paragraph_list:
 
 for doc in documents_list:
     most_repeated_word_setter(documents_list, doc, inverted_index)
-    five_most_important_words_setter(doc, inverted_index)
-
-temp_list = []
-
-for doc in documents_list:
-    temp_list.append(doc.two_d_vector)
-
-data = np.array(temp_list)
-
-# Apply K-Means clustering
-kmeans = KMeans(n_clusters=10, random_state=42)
-labels = kmeans.fit_predict(data)
-
-# Plot the original data and the clusters
-plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', edgecolor='k')
-plt.title('K-Means Clustering')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.legend()
-plt.show()
+    five_most_important_words_setter(doc)
