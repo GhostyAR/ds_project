@@ -165,3 +165,12 @@ def two_d_vectorization(documents_list: list):
     transformed_data = pca.fit_transform(vectors_list)
     for i in range(len(transformed_data)):
         documents_list[i].two_d_vector = transformed_data[i].tolist()
+
+
+def corpus_filler(corpus: list, document_id: int, document_add_list: list):
+    document_add_list.append(document_id)
+    file_paths = "data/document_{}.txt"
+    final_path = file_paths.format(document_id)
+    with open(final_path, 'r', encoding='utf-8') as file:
+        file_content = file.read()
+        corpus.append(file_content)

@@ -1,15 +1,6 @@
 from ds_project_lib import *
 
 
-def corpus_filler(corpus: list, document_id: int, document_add_list: list):
-    document_add_list.append(document_id)
-    file_paths = "data/document_{}.txt"
-    final_path = file_paths.format(document_id)
-    with open(final_path, 'r', encoding='utf-8') as file:
-        file_content = file.read()
-        corpus.append(file_content)
-
-
 documents_list = []
 
 corpus = []
