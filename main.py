@@ -3,6 +3,8 @@ import string
 from difflib import SequenceMatcher
 from sklearn.decomposition import PCA
 import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 
 class Document():
@@ -161,7 +163,7 @@ def two_d_vectorization(documents_list: list):
     for doc in documents_list:
         vectors_list.append(doc.doc_vector)
     transformed_data = pca.fit_transform(vectors_list)
-    for i in range(len(transformed_data) - 1):
+    for i in range(len(transformed_data)):
         documents_list[i].two_d_vector = transformed_data[i].tolist()
 
 
@@ -202,6 +204,7 @@ for doc in documents_list:
 
 vectorizing_documents(documents_list)
 
+two_d_vectorization(documents_list)
 
 user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
 
@@ -230,3 +233,22 @@ for i in paragraph_list:
 for doc in documents_list:
     most_repeated_word_setter(documents_list, doc, inverted_index)
     five_most_important_words_setter(doc)
+
+temp_list = []
+
+for doc in documents_list:
+    temp_list.append(doc.two_d_vector)
+
+data = np.array(temp_list)
+
+# Apply K-Means clustering
+kmeans = KMeans(n_clusters=10, random_state=42)
+labels = kmeans.fit_predict(data)
+
+# Plot the original data and the clusters
+plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', edgecolor='k')
+plt.title('K-Means Clustering')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.show()
