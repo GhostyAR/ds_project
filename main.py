@@ -21,17 +21,18 @@ for i in range(0, number_of_candidate_docs):
 # creating objects of Document class and appending them to documents_list
 doc_object_creator(documents_list, corpus)
 
-inverted_index = make_inverted_index(corpus)
+inverted_index = make_inverted_index(documents_list)
 
 
 for doc in documents_list:
     for paragraph in doc.paragraphs_vectors.keys():
         doc.paragraphs_vectors[paragraph] = TF_IDF_vectorize(
-            corpus, inverted_index, paragraph)
+            documents_list, inverted_index, paragraph)
 
 vectorizing_documents(documents_list)
 
-user_query_vector = TF_IDF_vectorize_query(corpus, inverted_index, user_query)
+user_query_vector = TF_IDF_vectorize_query(
+    documents_list, inverted_index, user_query)
 
 most_similar_doc = list(most_similar(None,
                                      documents_list, user_query_vector).keys())[-1]

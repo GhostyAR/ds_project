@@ -18,12 +18,12 @@ for txt in corpus:
     doc.paragraphs_vectors = {paragraph: []for paragraph in txt.split('\n')}
     documents_list.append(doc)
 
-inverted_index = make_inverted_index(corpus)
+inverted_index = make_inverted_index(documents_list)
 
 for doc in documents_list:
     for paragraph in doc.paragraphs_vectors.keys():
         doc.paragraphs_vectors[paragraph] = TF_IDF_vectorize(
-            corpus, inverted_index, paragraph)
+            documents_list, inverted_index, paragraph)
 
 vectorizing_documents(documents_list)
 
