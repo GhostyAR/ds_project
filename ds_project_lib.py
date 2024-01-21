@@ -10,6 +10,10 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+lemmatizer = WordNetLemmatizer()
 
 class Document():
     def __init__(self):
@@ -20,25 +24,25 @@ class Document():
         self.two_d_vector = []
         self.most_repeated_word = ""
         self.five_most_important_words = []
-
-
-def remove_punctuation(text: str):
-    translator = text.maketrans("", "", string.punctuation)
-    cleaned_text = text.translate(translator)
-    return cleaned_text
+        self.lemmatized_final = []
 
 
 def tokenizer(text: str):
     text = text.lower()
-    cleaned_text = remove_punctuation(text)
-    return cleaned_text.split()
+    text = word_tokenize(text)
+    filtered_words = [word for word in text if word not in stopwords.words(
+        'english') and word not in string.punctuation]
+    lemmatized_words = [lemmatizer.lemmatize(wrd) for wrd in filtered_words]
+    return lemmatized_words
 
 
-def make_inverted_index(documents_list):
+
+def make_inverted_index(documents_list: list):
     inverted_index = {}
     i = 0
     for doc in documents_list:
-        doc_word_set = set(tokenizer(doc))
+        doc.lemmatized_final = tokenizer(doc.text)
+        doc_word_set = set(doc.lemmatized_final)
         for word in doc_word_set:
             if word not in inverted_index.keys():
                 inverted_index[word] = []
