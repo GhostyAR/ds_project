@@ -5,6 +5,10 @@ from sklearn.decomposition import PCA
 import numpy as np
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
 
 class Document():
