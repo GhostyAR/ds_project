@@ -18,7 +18,7 @@ for txt in corpus:
     doc.paragraphs_vectors = {paragraph: []for paragraph in txt.split('\n')}
     documents_list.append(doc)
 
-inverted_index = make_inverted_index(documents_list)
+inverted_index = make_inverted_index(corpus)
 
 for doc in documents_list:
     for paragraph in doc.paragraphs_vectors.keys():
