@@ -21,7 +21,7 @@ for i in range(0, number_of_candidate_docs):
 # creating objects of Document class and appending them to documents_list
 doc_object_creator(documents_list, corpus)
 
-inverted_index = make_inverted_index(corpus)
+inverted_index = make_inverted_index(documents_list)
 
 
 for doc in documents_list:
